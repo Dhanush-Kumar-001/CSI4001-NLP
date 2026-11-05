@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The NLP Pipeline | Dhanush Kumar G</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070a12;--panel:#0d1220;--line:#1f2a44;--fg:#dbe5ff;--mute:#7c8bb0;--cyan:#4de1ff;--violet:#a78bfa;--lime:#b6ff6a;--star:#ffd166;--pink:#ff6b9d;--disp:"Space Grotesk",system-ui,sans-serif;--mono:"JetBrains Mono",Consolas,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font:16px/1.65 var(--disp);padding-bottom:96px;overflow-x:hidden;background-image:linear-gradient(rgba(77,225,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(77,225,255,.035) 1px,transparent 1px);background-size:44px 44px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+#prog{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--cyan),var(--violet),var(--star));z-index:90}
+.stage{padding:90px 0 30px}
+.sh{margin-bottom:30px;border-left:3px solid var(--cyan);padding-left:16px}
+.no{font:600 12px var(--mono);letter-spacing:.2em;color:var(--cyan)}
+.sh h2{font:700 clamp(32px,6vw,58px)/1.05 var(--disp);margin:4px 0}
+.fn{font:13px var(--mono);color:var(--mute)}
+.tk{display:inline-block;font:600 14px var(--mono);border:1px solid var(--line);background:var(--panel);padding:3px 10px;border-radius:6px;margin:3px 4px 3px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px}
+/* cover */
+#cover{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:50px 0 20px}
+.eyebrow{font:600 12px var(--mono);letter-spacing:.25em;color:var(--violet);text-transform:uppercase}
+#cover h1{font:700 clamp(46px,11vw,128px)/.92 var(--disp);letter-spacing:-.04em;margin:12px 0}
+#cover h1 span{background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.term{max-width:760px;margin-top:22px}
+.term .bar{font:12px var(--mono);color:var(--mute);padding:8px 14px;border-bottom:1px solid var(--line)}
+.term pre{padding:16px;font:14px/1.7 var(--mono);white-space:pre-wrap;word-break:break-word}
+.term .g{color:var(--lime)}.term .s{color:var(--star)}.term .c{color:var(--mute)}
+.cur{display:inline-block;width:.6em;height:1.05em;background:var(--cyan);vertical-align:text-bottom;animation:bl 1s steps(2) infinite}
+@keyframes bl{50%{opacity:0}}
+.meta{display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:22px;font:13px var(--mono);color:var(--mute)}
+.meta b{color:var(--fg);font-weight:600}
+.go{display:inline-block;margin-top:26px;background:var(--cyan);color:#04202a;font:700 15px var(--disp);padding:13px 24px;border-radius:8px;text-decoration:none;border:0;cursor:pointer;box-shadow:0 0 28px rgba(77,225,255,.35)}
+.go:hover,.go:focus-visible{filter:brightness(1.12);outline:2px solid var(--star)}
+.stk{position:absolute;right:22px;top:64px;width:110px;height:110px;border:2px dashed var(--star);border-radius:50%;display:grid;place-content:center;text-align:center;color:var(--star);font:600 11px/1.3 var(--mono);transform:rotate(10deg);animation:wob 3.4s ease-in-out infinite}
+.stk b{font:700 34px/1 var(--disp);display:block}
+@keyframes wob{50%{transform:rotate(-6deg) scale(1.05)}}
+/* modules */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.mod h3{font:700 20px/1.2 var(--disp);margin:6px 0 8px}
+.mod p{font-size:14px;color:#b8c4e6}
+.mod .i{font:600 12px var(--mono);color:var(--cyan)}
+.mod .tk{font-size:12px;color:var(--lime);margin-top:10px}
+.mod{transition:transform .2s,border-color .2s}.mod:hover{transform:translateY(-4px);border-color:var(--cyan)}
+/* fame */
+#flt{margin:6px 0 10px}
+#flt .tk{font-size:17px;transition:all .8s}
+.in #flt .stop{opacity:.18;text-decoration:line-through;transform:translateY(12px) scale(.85);transition-delay:calc(var(--i)*.14s + .5s)}
+.in #flt .keep{color:var(--star);border-color:var(--star);box-shadow:0 0 18px rgba(255,209,102,.35);transition-delay:calc(var(--i)*.14s + 1.3s)}
+.fgrid{display:grid;grid-template-columns:1.4fr 1fr;gap:34px;align-items:start;margin-top:26px}
+.tot{font:700 clamp(80px,15vw,160px)/.9 var(--disp);color:var(--star);text-shadow:0 0 40px rgba(255,209,102,.3)}
+.tot small{display:block;font:600 12px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--mute);margin-top:8px}
+.row{display:grid;grid-template-columns:92px 1fr auto;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);align-items:center;list-style:none}
+.row .dt{font:12px var(--mono);color:var(--mute)}
+.row b{font:700 18px var(--disp);display:block}.row i{font-size:13px;color:#b8c4e6;font-style:normal}
+.row .tp em{font:11px var(--mono);border:1px solid var(--line);padding:1px 7px;border-radius:99px;margin:4px 5px 0 0;font-style:normal;color:var(--lime);display:inline-block}
+.st{font-size:20px;color:var(--star);white-space:nowrap}
+.st span{display:inline-block;opacity:0;transform:scale(0) rotate(-90deg)}
+.in .st span{animation:pop .5s forwards;animation-delay:calc(var(--d)*.18s + 1.6s)}
+@keyframes pop{60%{transform:scale(1.5) rotate(15deg)}to{opacity:1;transform:none}}
+.record{min-height:220px;display:flex;flex-direction:column;justify-content:center;gap:12px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 82% 18%,rgba(255,209,102,.14),transparent 55%),var(--panel)}
+.record img{width:100%;max-height:360px;object-fit:contain;object-position:center;background:#080c18;border:1px solid var(--line);border-radius:8px;cursor:zoom-in}
+.record strong{font:700 clamp(52px,8vw,78px)/.95 var(--disp);color:var(--star)}
+.record p{max-width:260px;color:#b8c4e6}
+.record::after{content:"★";position:absolute;right:20px;bottom:-38px;font:180px/1 var(--disp);color:rgba(255,209,102,.08);pointer-events:none}
+/* activities */
+.act{margin-bottom:18px}
+.act .k{font:600 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--violet)}
+.act h3{font:700 clamp(20px,3vw,26px)/1.2 var(--disp);margin:6px 0 8px}
+.stem{font:13px var(--mono);color:var(--mute);margin-bottom:10px}
+.stem em{font-style:normal;color:var(--fg)}.stem s{color:var(--pink);text-decoration-thickness:2px}.stem u{color:var(--lime);text-decoration:none;font-weight:600}
+.act p{font-size:15px;color:#c3cdea}
+.imgs{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.imgs img{height:130px;border-radius:6px;border:1px solid var(--line);cursor:zoom-in}
+.links{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap}
+.links a{font:600 13px var(--mono);color:var(--cyan);border:1px solid var(--cyan);padding:6px 12px;border-radius:6px;text-decoration:none}
+.links a:hover{background:var(--cyan);color:#04202a}
+/* project */
+.pos{display:flex;flex-wrap:wrap;gap:8px 12px;margin:6px 0 22px}
+.pw{text-align:center;font:600 18px var(--mono)}
+.pw small{display:block;font-size:10px;letter-spacing:.14em;margin-bottom:2px}
+.PRON,.PROPN{color:var(--star)}.VERB{color:var(--lime)}.NOUN{color:var(--cyan)}.ADJ{color:var(--violet)}.ADP,.DET{color:var(--pink)}
+.intro{max-width:760px;color:#c3cdea;margin-bottom:20px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px;counter-reset:s}
+.steps .card{counter-increment:s;font-size:14px}
+.steps .card::before{content:counter(s,decimal-leading-zero);font:700 26px var(--mono);color:var(--cyan);display:block}
+.steps b{display:block;margin:2px 0 4px}
+h4.sub{font:700 13px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--violet);margin:26px 0 8px}
+#emb{width:100%;height:auto;background:radial-gradient(ellipse at 50% 40%,#101a33,#080c18);border:1px solid var(--line);border-radius:10px;touch-action:manipulation}
+#emb .w{cursor:pointer}#emb .w text{font:600 13px "Noto Sans Devanagari","Noto Sans Tamil",var(--mono);fill:var(--fg);text-anchor:middle}
+#emb .w circle{transition:r .2s}#emb .w:hover circle,#emb .w:focus-visible circle{r:9}#emb .w:focus-visible{outline:none}
+#emb .nb circle{r:9;stroke:#fff;stroke-width:2}
+.eo{font:13px var(--mono);color:var(--lime);min-height:44px;margin-top:10px}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.btns button{font:600 13px var(--mono);background:var(--panel);color:var(--cyan);border:1px solid var(--cyan);border-radius:6px;padding:8px 14px;cursor:pointer}
+.btns button:hover,.btns button:focus-visible{background:var(--cyan);color:#04202a;outline:none}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:20px}
+.two h3{font:700 18px var(--disp);margin-bottom:8px}.two ul{padding-left:18px;font-size:14px;color:#c3cdea}
+.ADV,.CCONJ{color:var(--pink)}
+.ptitle{font:700 clamp(26px,4vw,40px)/1.1 var(--disp)}
+.tagl{font:italic 500 18px var(--disp);color:var(--violet);margin:6px 0 4px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:22px 0}
+.kpi b{font:700 34px/1 var(--disp);color:var(--cyan);display:block;margin-bottom:4px}.kpi span{font-size:14px}.kpi small{display:block;font:11px var(--mono);color:var(--mute);margin-top:4px}
+.pb{color:var(--pink);font-size:13px}.ps{color:var(--lime);font-size:14px;margin-top:6px}
+.chipl{display:inline-block;font:600 12px var(--mono);border:1px solid var(--line);background:var(--panel);padding:4px 10px;border-radius:99px;margin:6px 6px 0 0;color:var(--lime)}
+#nx{width:100%;min-height:84px;margin-top:12px;background:#0a0f1c;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:12px;font:14px/1.6 var(--mono);resize:vertical}
+#nx:focus{outline:2px solid var(--cyan)}
+.nxout{margin-top:12px;font-size:16px;line-height:2.1}
+.en{padding:2px 7px;border-radius:5px;font:600 14px var(--mono);margin:0 1px}
+.en.A{background:rgba(182,255,106,.15);border:1px solid var(--lime);color:var(--lime)}
+.en.N{background:rgba(255,107,157,.15);border:1px solid var(--pink);color:var(--pink);text-decoration:line-through}
+table.lg{width:100%;border-collapse:collapse;margin-top:12px;font:12.5px var(--mono);line-height:1.5}.lg th,.lg td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}.lg th{color:var(--mute);font-weight:600}
+.shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.shot{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;cursor:zoom-in;padding:0;color:inherit;text-align:left;font:inherit;transition:transform .2s,border-color .2s}
+.shot:hover,.shot:focus-visible{transform:translateY(-4px);border-color:var(--cyan);outline:none}
+.shot img{width:100%;height:190px;object-fit:cover;object-position:top;display:block;background:#111}
+.shot div{padding:12px 14px}.shot b{display:block}.shot span{font-size:13px;color:#b8c4e6}
+/* output */
+.gauge{height:18px;background:var(--panel);border:1px solid var(--line);border-radius:99px;overflow:hidden;margin:14px 0 6px;max-width:560px}
+.gauge div{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--lime));transition:width 2s cubic-bezier(.2,.8,.2,1)}
+.big{font:700 clamp(28px,5vw,46px)/1.1 var(--disp)}.big span{color:var(--lime)}
+.letter{max-height:0;overflow:hidden;transition:max-height 1.4s ease}.letter.open{max-height:1800px}
+.letter .li{padding:26px 0}.letter p{margin-bottom:14px;max-width:700px}
+.letter .sig{font:italic 700 28px var(--disp);color:var(--star)}
+.boxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:20px}
+.boxes h5{font:700 11px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--pink);margin-bottom:6px}
+.boxes .card{font-size:13px}.boxes pre{font:11.5px/1.5 var(--mono);color:var(--lime);overflow-x:auto}
+footer{text-align:center;padding:50px 22px;font:13px var(--mono);color:var(--mute)}
+/* monitor */
+#mon{position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(7,10,18,.95);border-top:1px solid var(--cyan);backdrop-filter:blur(8px);padding:9px 16px;display:flex;gap:14px;align-items:center;font:12px var(--mono)}
+#monStage{color:var(--cyan);white-space:nowrap;min-width:170px}
+#monOut{flex:1;overflow-x:auto;white-space:nowrap;display:flex;gap:6px;align-items:center;scrollbar-width:none}
+.mt{border:1px solid var(--line);background:var(--panel);padding:2px 8px;border-radius:5px;animation:fi .4s both;white-space:nowrap}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}}
+.mt i{color:var(--lime);font-style:normal;margin-left:5px;font-size:10px}
+#dots{display:flex;gap:7px}#dots a{width:10px;height:10px;border-radius:50%;background:var(--line);display:block}
+#dots a.on{background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
+#lb{position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:100;display:none;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}
+#lb.open{display:flex}#lb img{max-width:100%;max-height:94vh;border-radius:4px}#lb .ph{max-width:420px}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:120}
+.rv{opacity:0;transform:translateY(24px);transition:opacity .8s,transform .8s}.rv.in{opacity:1;transform:none}
+@media (max-width:760px){.fgrid{grid-template-columns:1fr}.row{grid-template-columns:1fr auto}.row .dt{grid-column:1/-1}#dots{display:none}#monStage{min-width:120px}.stk{display:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}.st span{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div id="prog"></div><canvas id="fx" aria-hidden="true"></canvas><div id="lb" role="dialog" aria-label="Photo viewer"></div>
+
+<!-- STAGE 00: RAW TEXT -->
+<header id="raw" class="wrap" data-stage="0" style="position:relative">
+  <div id="cover">
+    <div class="stk"><span><b id="cStars">0</b>tokens kept<br>(stars)</span></div>
+    <span class="eyebrow" id="eb"></span>
+    <h1>The NLP<br><span>Pipeline</span></h1>
+    <p class="fn" style="font-size:15px;max-width:620px">A semester of Natural Language Processing at VIT Vellore, documented through course concepts, classroom contributions, hands-on work and ClinScribe — an ambient clinical intelligence project.</p>
+    <div class="card term"><div class="bar">● ● ● &nbsp; pipeline.py</div><pre id="typed"></pre></div>
+    <div class="meta"><span>name <b id="cName"></b></span><span>reg <b id="cReg"></b></span><span id="cCol"></span></div>
+    <a class="go" href="#tok">▶ Run the pipeline</a>
+  </div>
+</header>
+
+<!-- STAGE 01: TOKENIZATION -->
+<section id="tok" class="wrap stage" data-stage="1">
+  <div class="sh rv"><span class="no">STAGE 01</span><h2>Tokenization</h2><p class="fn">tokenize(syllabus) → modules[]</p></div>
+  <div class="grid" id="mods"></div>
+</section>
+
+<!-- STAGE 02: STOP-WORD REMOVAL -->
+<section id="fame" class="wrap stage" data-stage="2">
+  <div class="sh rv"><span class="no">STAGE 02</span><h2>Hall of Fame</h2><p class="fn">remove_stopwords(class_chatter) → stars[]</p></div>
+  <div class="rv" id="fw">
+    <p class="fn" style="margin-bottom:8px">Class participation goes through the filter. Noise is dropped; contributions that matter survive.</p>
+    <div id="flt"></div>
+    <div class="fgrid">
+      <div><div class="tot"><span id="tot">0</span>★<small id="totSub"></small></div><ul id="honour" style="margin-top:22px"></ul></div>
+      <aside class="card record" aria-label="Hall of fame star photo">
+        <span class="no">HALL OF FAME · STAR EVIDENCE</span>
+        <img id="starPhoto" src="star.jpeg" alt="Star evidence for the NLP classroom hall of fame" loading="lazy" onclick="openLb(this)">
+        <span class="fn" id="recordSessions"></span>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- STAGE 03: STEMMING -->
+<section id="act" class="wrap stage" data-stage="3">
+  <div class="sh rv"><span class="no">STAGE 03</span><h2>Classroom Activities</h2><p class="fn">stem(activity) → root skill</p></div>
+  <div id="acts"></div>
+</section>
+
+<!-- STAGE 04: POS TAGGING -->
+<section id="pos" class="wrap stage" data-stage="4">
+  <div class="sh rv"><span class="no">STAGE 04</span><h2>NLP Project</h2><p class="fn">pos_tag(project) → anatomy</p></div>
+  <div class="rv">
+    <div class="pos" id="posRow"></div>
+    <h3 class="ptitle" id="pTitle"></h3>
+    <p class="tagl" id="pTag"></p>
+    <p class="fn" id="pTeam"></p>
+    <p class="intro" style="margin-top:14px" id="pIntro"></p>
+    <div class="links" id="pLinks"></div>
+    <div class="kpis" id="pKpi"></div>
+    <h4 class="sub">The problem → ClinScribe’s answer</h4>
+    <div class="two" id="pProb"></div>
+    <h4 class="sub">The 7-stage pipeline</h4>
+    <div class="steps" id="pSteps"></div>
+    <h4 class="sub">Tech stack</h4>
+    <div id="pStack"></div>
+  </div>
+</section>
+
+<!-- STAGE 05: EMBEDDINGS -->
+<section id="vec" class="wrap stage" data-stage="5">
+  <div class="sh rv"><span class="no">STAGE 05</span><h2>ClinScribe in Action</h2><p class="fn">recognize_entities(consultation) → ledger</p></div>
+  <div class="rv">
+    <h4 class="sub" style="margin-top:0">Try the negation engine live</h4>
+    <p class="fn">A small JavaScript re-creation of ClinScribe’s hardened NegEx idea (trigger windows plus clause-scope terminators), running right here. The real engine is the Python code in the repository. Type your own sentence.</p>
+    <div class="btns" id="presets"></div>
+    <textarea id="nx" spellcheck="false" aria-label="Clinical sentence to analyze"></textarea>
+    <div class="card nxout" id="nxOut"></div>
+    <h4 class="sub">System captures</h4>
+    <div class="shots" id="shots"></div>
+  </div>
+</section>
+
+<!-- STAGE 06: OUTPUT -->
+<section id="out" class="wrap stage" data-stage="6">
+  <div class="sh rv"><span class="no">STAGE 06</span><h2>Output</h2><p class="fn">model.predict(semester) → label</p></div>
+  <div class="rv" id="ow">
+    <div class="big">Sentiment: <span>POSITIVE</span> <small id="pct" style="font:600 20px var(--mono);color:var(--mute)">(0.0%)</small></div>
+    <div class="gauge"><div id="gf"></div></div>
+    <button class="go" id="env">▶ model.predict(letter_to_faculty)</button>
+    <div class="letter" id="letter"><div class="li">
+      <p id="l1"></p>
+      <p>Every token of this course passed through your pipeline: the lectures I split into ideas, the noise you taught me to filter out, the roots of each concept you helped me find, and the structure you showed me inside language itself.</p>
+      <p>Every star on that notebook page was a small positive example in my training set. Thank you for the questions that made me think and the explanations that made it click. நன்றி · धन्यवाद · നന്ദി · ధన్యవాదాలు · Thank you.</p>
+      <p class="sig" id="sig"></p>
+      <div class="boxes">
+        <div class="card"><h5>Stop-word report</h5>Words removed from this letter: 0. Every word of thanks is important.</div>
+        <div class="card"><h5>Perplexity</h5>1.0, which means zero surprise at how good the classes were.</div>
+        <div class="card"><h5>BLEU score</h5>100. The thank-you translated perfectly into every language above.</div>
+        <div class="card"><h5>Confusion matrix</h5><pre>             pred:great  pred:other
+actual:great    100          0
+actual:other      0          0</pre></div>
+      </div>
+      <p style="margin-top:20px"><button class="go" id="cel" style="margin:0">🎉 Applaud the Professor</button></p>
+    </div></div>
+  </div>
+</section>
+
+<footer>pipeline finished · exit code 0 · no tokens were harmed<br>Built by <span id="fName"></span> with Python-flavoured curiosity</footer>
+
+<div id="mon"><span id="monStage"></span><div id="monOut"></div><div id="dots"></div></div>
+
+<script>
+/* ============ EDIT THIS PART ============ */
+const CONFIG = {
+  name: "Dhanush Kumar G", reg: "23MID0141", college: "VIT Vellore",
+  course: "CSI4001 Natural Language Processing and Computational Linguistics", semester: "Semester 2026",
+  faculty: "Ma’am", facultyFull: "Dr. Sharmila Banu K"
+};
+const SENT = "Dhanush is learning NLP and earning stars";   // the sentence that travels down the pipeline
+
+// SAMPLE content below: replace with your real syllabus, stars, activities and project
+const MODULES = [
+  {t:"Text Processing", d:"Regular expressions, tokenization, normalization and edit distance.", k:["regex","tokenization","stemming"]},
+  {t:"Language Models", d:"N-grams, smoothing and perplexity: how machines guess the next word.", k:["n-grams","smoothing","perplexity"]},
+  {t:"Morphology & POS Tagging", d:"Words, their structure and tagging them with HMMs.", k:["morphology","POS","HMM"]},
+  {t:"Syntax & Parsing", d:"Grammars, constituency and dependency parsing.", k:["CFG","parsing","dependencies"]},
+  {t:"Vector Semantics & Embeddings", d:"TF-IDF, Word2Vec, GloVe and fastText: meaning as geometry.", k:["TF-IDF","word2vec","GloVe"]},
+  {t:"Sequence Models & Transformers", d:"RNNs, attention and the transformer architecture.", k:["RNN","attention","transformers"]},
+  {t:"Applications", d:"Sentiment analysis, NER, machine translation and question answering.", k:["sentiment","NER","MT"]}
+];
+const FILTER_WORDS = "the I um answered a question and earned a star";   // class chatter for the filter animation
+const STOPS = ["the","i","um","a","and"];
+const STAR_SESSIONS = [   // date: YYYY-MM-DD
+  {date:"2026-07-27", stars:1, title:"Class Discussion", note:"Answered three points that had been discussed in class.", topics:["Class discussion"]},
+  {date:"2026-07-31", stars:1, title:"NLTK Session", note:"Answered questions during the NLTK session.", topics:["NLTK"]}
+];
+const ACTIVITIES = [   // word -> stem: shows the suffix being stripped
+  {date:"August 2026", kind:"Class Activity", title:"2 Hands-on Sessions using NLTK", word:"processing", stem:"process",
+   desc:"Completed two comprehensive hands-on laboratory sessions using the Natural Language Toolkit (NLTK) for text analysis, inaugural speech corpus processing, word cloud generation, and rule-based linguistic feature classification.",
+   tags:["NLTK","Inaugural Speech Corpus","Word Cloud","Gender Identification","Text Preprocessing"], imgs:[],
+   links:[{t:"GitHub Repo ↗", u:"https://github.com/Dhanush-Kumar-001/CSI4001-NLP"}]}
+];
+const PROJECT = {
+  name:"ClinScribe", sub:"Ambient Clinical Intelligence for Health Record",
+  tagline:"Restoring the doctor-patient connection through local, deterministic ambient intelligence.",
+  team:"Dhanush Kumar G (23MID0141) & Sumitha Murthi K G (23MIC0141)",
+  facts:["CSI4001 J-Component","Slot F1+TF1","Guide: Dr. Sharmila Banu K","November 2026"],
+  pos:[["ClinScribe","PROPN"],["transcribes","VERB"],["consultations","NOUN"],["locally","ADV"],["and","CCONJ"],["extracts","VERB"],["clinical","ADJ"],["entities","NOUN"]],
+  intro:"An end-to-end, privacy-preserving ambient clinical intelligence platform that removes EHR documentation burden without disrupting the consultation. It transcribes multi-speaker dialogue locally with Faster-Whisper, resolves Doctor and Patient roles, writes structured SOAP notes, extracts clinical entities mapped to SNOMED-CT, RxNorm, ICD-10 and LOINC, isolates conditional and PRN orders, and keeps longitudinal patient histories with zero cloud leakage.",
+  links:[{t:"💻 GitHub Repository ↗",u:"https://github.com/sumitha-murthi/ClinScribe"},{t:"📄 Project Report (22 pages) ↗",u:"ClinScribe_Project_Report.pdf"},{t:"🌐 NLP Portfolio Reference ↗",u:"https://sumitha-murthi-k-g-nlp-portfolio.ai.studio/"}],
+  kpis:[["93.85%","NegEx polarity accuracy","61 of 65 complex utterances"],["0.055","Whisper real-time factor","about 18× faster than real time, on CPU"],["100%","Timeline safety","0 conditional or PRN violations in 28 actions"],["94.74%","Concept normalization","72 of 76 mentions grounded to standard codes"],["< 5 s","Note generation","down from about 15 min of manual entry"],["0.73 MB","Peak memory overhead","runs on a standard clinic workstation"]],
+  problems:[["Documentation burnout","Clinicians spend over 2 hours on EHR entry for every hour of patient care.","Passive audio intake produces a complete SOAP note in under 5 seconds, entirely local."],["Negation bleed","Generative models misread “denies fever” as an affirmed symptom.","A hardened finite-state NegEx engine ends negation scope at “but”, “however” and punctuation."],["Temporal order flattening","“Take ibuprofen as needed” turns into a mandatory order.","A condition-aware timeline isolates PRN and contingent orders."],["Fragmented records","Stateless tools lose the history of chronic problems and prior therapies.","A relational SQLite ledger keeps continuous, regenerable patient dossiers."]],
+  steps:[["Ambient audio intake","File upload or in-browser recording with magic-byte validation."],["Faster-Whisper ASR","Local INT8 transcription with voice activity detection."],["Speaker role mapping","Zero-shot reasoning labels Doctor and Patient turns."],["SOAP synthesis","Subjective, Objective, Assessment and Plan with clinician review."],["NegEx and normalization","Clause-scoped polarity and ontology grounding."],["Care timeline sequencer","Separates immediate, PRN and follow-up actions."],["Relational ledger","Atomic SQLite commits with rollback and JSON dossiers."]],
+  stack:["Python 3.11 · FastAPI","Faster-Whisper (CTranslate2 INT8)","Llama 3.2 via Ollama","SQLite + SQLAlchemy","Pydantic v2","Tailwind CSS","Pytest"],
+  shots:[
+    ["ClinScribe_System_Architecture_Pipeline_759ea115.png","System architecture","End-to-end pipeline from audio intake to longitudinal records"],
+    ["Audio%20Intake%20%26%20Consultation%20Processing.png","Audio intake","Consultation capture and patient intake workflow"],
+    ["Clinical%20Summary%20%26%20Diarized%20Transcript.png","Diarized transcript and clinical summary","Speaker-attributed consultation transcript and generated summary"],
+    ["Clinical%20Entity%20Ledger%20%26%20Normalization.png","Clinical entity ledger","Extracted clinical entities and terminology normalization"],
+    ["Clinical%20Findings%20%26%20Master%20Patient%20Ledger.png","Clinical findings and patient ledger","Consolidated findings in the longitudinal patient record"],
+    ["Condition-Aware%20Care%20Timeline%20Workbench.png","Condition-aware care timeline","Scheduled, conditional and as-needed care actions"]
+  ]
+};
+/* ========================================= */
+
+const $=s=>document.querySelector(s), esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches, sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const total=STAR_SESSIONS.reduce((a,x)=>a+x.stars,0);
+const fmt=d=>new Date(d+"T00:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+
+/* ---- cover ---- */
+$("#eb").textContent=`${CONFIG.course} · ${CONFIG.semester}`;
+$("#cName").textContent=CONFIG.name; $("#cReg").textContent=CONFIG.reg; $("#cCol").textContent=CONFIG.college;
+$("#cStars").textContent=total; $("#fName").textContent=CONFIG.name;
+(async()=>{const el=$("#typed");
+  const L=[`<span class="g">&gt;&gt;&gt;</span> text = <span class="s">"${esc(SENT)}"</span>`,`<span class="g">&gt;&gt;&gt;</span> pipeline.run(text)`,`<span class="c"># scroll down: each section is one stage of the pipeline</span>`,`<span class="g">&gt;&gt;&gt;</span> <span class="cur"></span>`];
+  let h="";for(const l of L){h+=l+"\n";el.innerHTML=h;if(!reduce)await sleep(450)}})();
+
+/* ---- pipeline monitor ---- */
+const STAGES=["Raw text","Tokenization","Stop-word removal","Stemming","POS tagging","Entity recognition","Output"];
+const IDS=["raw","tok","fame","act","pos","vec","out"];
+const hash=s=>{let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
+const vec=w=>[1,2,3].map(i=>(((hash(w+i)%200)-100)/100).toFixed(2));
+const STEM={Dhanush:"dhanush",learning:"learn",NLP:"nlp",earning:"earn",stars:"star"};
+const POS={Dhanush:"PROPN",learning:"VERB",NLP:"PROPN",earning:"VERB",stars:"NOUN"};
+const ENT={Dhanush:"PERSON",NLP:"FIELD",stars:"REWARD"};
+const SW=new Set(["is","and"]);
+const toks=SENT.split(" "), kept=toks.filter(t=>!SW.has(t.toLowerCase()));
+const st=w=>STEM[w]||w.toLowerCase(), ps=w=>POS[w]||"X";
+const OUT=[
+  [`<span class="mt">${esc(SENT)}</span>`],
+  toks.map(t=>`<span class="mt">${esc(t)}</span>`),
+  kept.map(t=>`<span class="mt">${esc(t)}</span>`),
+  kept.map(t=>`<span class="mt">${esc(st(t))}</span>`),
+  kept.map(t=>`<span class="mt">${esc(st(t))}<i>${ps(t)}</i></span>`),
+  kept.filter(t=>ENT[t]).map(t=>`<span class="mt">${esc(t)}<i>${ENT[t]}</i></span>`),
+  [`<span class="mt" style="color:var(--lime);border-color:var(--lime)">Sentiment: POSITIVE (99.9%)</span>`]
+];
+$("#dots").innerHTML=STAGES.map((s,i)=>`<a href="#${IDS[i]}" title="${s}" aria-label="${s}"></a>`).join("");
+let cur=-1;
+function setStage(i){ if(i===cur)return; cur=i;
+  $("#monStage").textContent=`stage ${String(i).padStart(2,"0")} · ${STAGES[i]}`;
+  $("#monOut").innerHTML=OUT[i].join("");
+  document.querySelectorAll("#dots a").forEach((a,k)=>a.classList.toggle("on",k===i)) }
+setStage(0);
+const so=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)setStage(+e.target.dataset.stage)}),{rootMargin:"-45% 0px -50% 0px"});
+document.querySelectorAll("[data-stage]").forEach(e=>so.observe(e));
+
+/* ---- stage 1: modules ---- */
+$("#mods").innerHTML=MODULES.map((m,i)=>`<article class="card mod rv"><span class="i">[${i}] token</span><h3>${esc(m.t)}</h3><p>${esc(m.d)}</p>${m.k.map(k=>`<span class="tk">${esc(k)}</span>`).join("")}</article>`).join("");
+
+/* ---- stage 2: hall of fame ---- */
+$("#flt").innerHTML=FILTER_WORDS.split(" ").map((w,i)=>`<span class="tk ${STOPS.includes(w.toLowerCase())?"stop":"keep"}" style="--i:${i}">${esc(w)}</span>`).join("");
+$("#totSub").textContent=`stars earned across ${STAR_SESSIONS.length} sessions · awarded by ${CONFIG.facultyFull}`;
+$("#recordSessions").textContent=`Across ${STAR_SESSIONS.length} documented classroom sessions`;
+$("#honour").innerHTML=STAR_SESSIONS.map(x=>`<li class="row"><span class="dt">${fmt(x.date)}</span><span><b>${esc(x.title)}</b><i>${esc(x.note)}</i><span class="tp">${x.topics.map(t=>`<em>${esc(t)}</em>`).join("")}</span></span><span class="st" aria-label="${x.stars} stars">${Array.from({length:x.stars},(_,k)=>`<span style="--d:${k}">★</span>`).join("")}</span></li>`).join("");
+$("#lb").onclick=()=>$("#lb").classList.remove("open");
+addEventListener("keydown",e=>{if(e.key==="Escape")$("#lb").classList.remove("open")});
+function openLb(img){const l=$("#lb");l.innerHTML="";const i=new Image();i.src=img.src;i.alt=img.alt;l.appendChild(i);l.classList.add("open")}
+
+/* ---- stage 3: activities ---- */
+$("#acts").innerHTML=ACTIVITIES.map(a=>`<article class="card act rv"><span class="k">${esc(a.kind)} · ${esc(a.date)}</span><h3>${esc(a.title)}</h3>
+  <div class="stem">stem("<em>${esc(a.word.slice(0,a.stem.length))}<s>${esc(a.word.slice(a.stem.length))}</s></em>") → <u>"${esc(a.stem)}"</u></div><p>${esc(a.desc)}</p>${(a.tags||[]).map(t=>`<span class="chipl">${esc(t)}</span>`).join("")}
+  ${a.imgs.length?`<div class="imgs">${a.imgs.map(s=>`<img src="${esc(s)}" alt="Activity photo" onclick="openLb(this)" onerror="this.remove()">`).join("")}</div>`:""}
+  ${a.links.length?`<div class="links">${a.links.map(l=>`<a href="${esc(l.u)}" target="_blank" rel="noopener">${esc(l.t)}</a>`).join("")}</div>`:""}</article>`).join("");
+
+/* ---- stage 4: project ---- */
+$("#posRow").innerHTML=PROJECT.pos.map(([w,t])=>`<div class="pw ${t}"><small>${t}</small>${esc(w)}</div>`).join("");
+$("#pTitle").textContent=`${PROJECT.name}: ${PROJECT.sub}`;
+$("#pTag").textContent=PROJECT.tagline;
+$("#pTeam").textContent=`${PROJECT.team} · ${PROJECT.facts.join(" · ")}`;
+$("#pIntro").textContent=PROJECT.intro;
+$("#pLinks").innerHTML=PROJECT.links.map(l=>`<a href="${esc(l.u)}" target="_blank" rel="noopener">${esc(l.t)}</a>`).join("");
+$("#pKpi").innerHTML=PROJECT.kpis.map(([v,t,d])=>`<div class="card kpi"><b>${esc(v)}</b><span>${esc(t)}</span><small>${esc(d)}</small></div>`).join("");
+$("#pProb").innerHTML=PROJECT.problems.map(([t,p,a])=>`<div class="card"><h3>${esc(t)}</h3><p class="pb">⚠ ${esc(p)}</p><p class="ps">✓ ${esc(a)}</p></div>`).join("");
+$("#pSteps").innerHTML=PROJECT.steps.map(([t,d])=>`<div class="card"><b>${esc(t)}</b>${esc(d)}</div>`).join("");
+$("#pStack").innerHTML=PROJECT.stack.map(x=>`<span class="chipl">${esc(x)}</span>`).join("");
+
+/* ---- stage 5: live negation demo (JS re-creation of the idea) + captures ---- */
+const GAZ=[["shortness of breath","Symptom",""],["chest soreness","Symptom",""],["chest pain","Symptom",""],["headache","Symptom","ICD-10 R51.9"],["nausea","Symptom","ICD-10 R11.0"],["vomiting","Symptom","ICD-10 R11.10"],["fever","Symptom","ICD-10 R50.9"],["cough","Symptom",""],["dizziness","Symptom",""],["migraine","Diagnosis","ICD-10 G43.909"],["bronchitis","Diagnosis","ICD-10 J20.9"],["sumatriptan","Medication","RxNorm 10244"],["ibuprofen","Medication","RxNorm 5640"],["amoxicillin","Medication","RxNorm 723"],["mri of the brain","Investigation","LOINC 24627-2"],["chest x-ray","Investigation","LOINC 36572-6"]];
+const PRE=/\b(no|not|nor|denies|denied|denying|without|never|negative for|absence of|free of)\b/gi;
+const POSTN=/\b(is absent|are absent|was ruled out|were ruled out|ruled out|was negative|were negative|not present)\b/i;
+const PSEUDO=/\b(no change|no increase|no decrease|not only|not certain|no further)\b/i;
+const TERM=/\b(but|however|yet|nevertheless|while|whereas|already|though|with|presenting|reports|has had|have had|experiencing|complains of|presents with|consistent with|diagnosed with|prescribing|start)\b|[.;:!?\n]/i;
+function analyze(text){
+  const low=text.toLowerCase(),used=new Array(text.length).fill(false),ents=[];
+  [...GAZ].sort((a,b)=>b[0].length-a[0].length).forEach(([term,cat,code])=>{
+    let i=0;while((i=low.indexOf(term,i))>-1){const e=i+term.length;
+      if(!/\w/.test(low[i-1]||" ")&&!/\w/.test(low[e]||" ")&&!used.slice(i,e).some(Boolean)){for(let k=i;k<e;k++)used[k]=true;ents.push({s:i,e,cat,code})}
+      i=e}});
+  ents.sort((a,b)=>a.s-b.s);
+  ents.forEach(en=>{
+    const wb=text.slice(0,en.s).split(/\s+/).filter(Boolean).slice(-6).join(" "),wa=text.slice(en.e).split(/\s+/).filter(Boolean).slice(0,6).join(" ");
+    en.st="AFFIRMED";en.why="no negation trigger in scope";
+    const ms=[...wb.matchAll(PRE)],last=ms[ms.length-1];
+    if(last){ if(PSEUDO.test(wb)) en.why="pseudo-negation trap filtered";
+      else if(!TERM.test(wb.slice(last.index+last[0].length))){en.st="NEGATED";en.why=`pre-negation “${last[0].toLowerCase()}”`} }
+    if(en.st==="AFFIRMED"){const pm=wa.match(POSTN);if(pm&&!TERM.test(wa.slice(0,pm.index))){en.st="NEGATED";en.why=`post-negation “${pm[0]}”`}}
+  });
+  return ents;
+}
+function runNx(){
+  const text=$("#nx").value,ents=analyze(text);let h="",p=0;
+  ents.forEach(e=>{h+=esc(text.slice(p,e.s))+`<span class="en ${e.st==="NEGATED"?"N":"A"}" title="${esc(e.why)}">${esc(text.slice(e.s,e.e))}</span>`;p=e.e});
+  h+=esc(text.slice(p));const a=ents.filter(e=>e.st==="AFFIRMED").length;
+  $("#nxOut").innerHTML=ents.length?`<div>${h}</div><p class="fn" style="margin-top:6px">${ents.length} entities · <span style="color:var(--lime)">${a} affirmed</span> · <span style="color:var(--pink)">${ents.length-a} negated</span></p><div style="overflow-x:auto"><table class="lg"><tr><th>Mention</th><th>Category</th><th>Status</th><th>Code</th><th>Why</th></tr>${ents.map(e=>`<tr><td>${esc(text.slice(e.s,e.e))}</td><td>${e.cat}</td><td style="color:var(--${e.st==="NEGATED"?"pink":"lime"})">${e.st}</td><td>${esc(e.code||"–")}</td><td>${esc(e.why)}</td></tr>`).join("")}</table></div>`:`<span class="fn">No demo-gazetteer terms found. Try cough, fever, headache, nausea, migraine or ibuprofen.</span>`;
+}
+const PRESETS=[["Compound clause","Persistent cough and mild chest soreness, but denies fever and no shortness of breath"],["Pseudo-negation trap","Patient reports no change in headache severity"],["From the consultation","Yes, bright lights really bother me. But I have not had any nausea or vomiting, and no fever."]];
+$("#presets").innerHTML=PRESETS.map(([t],i)=>`<button data-i="${i}">${esc(t)}</button>`).join("");
+$("#presets").onclick=e=>{const b=e.target.closest("button");if(b){$("#nx").value=PRESETS[+b.dataset.i][1];runNx()}};
+$("#nx").oninput=runNx;$("#nx").value=PRESETS[0][1];runNx();
+function openSrc(s,t){const l=$("#lb");l.innerHTML="";const i=new Image();i.src=s;i.alt=t;l.appendChild(i);l.classList.add("open")}
+$("#shots").innerHTML=PROJECT.shots.map(([s,t,d])=>`<button class="shot" data-s="${esc(s)}" data-t="${esc(t)}"><img src="${esc(s)}" alt="${esc(t)}" loading="lazy" onerror="this.style.display='none'"><div><b>${esc(t)}</b><span>${esc(d)}</span></div></button>`).join("");
+$("#shots").onclick=e=>{const b=e.target.closest(".shot");if(b)openSrc(b.dataset.s,b.dataset.t)};
+$("#cel").textContent=`🎉 Applaud ${CONFIG.faculty}`;
+
+/* ---- stage 6: output ---- */
+$("#l1").textContent=`Dear ${CONFIG.facultyFull}, if this pipeline has a best component, it is you.`;
+$("#sig").textContent=`— ${CONFIG.name}`;
+const cv=$("#fx"),cx=cv.getContext("2d");let P=[],raf=0;
+const fit=()=>{cv.width=innerWidth;cv.height=innerHeight};addEventListener("resize",fit);fit();
+function confetti(){if(reduce)return;for(let i=0;i<170;i++)P.push({x:Math.random()*cv.width,y:-20-Math.random()*cv.height*.4,vx:(Math.random()-.5)*3,vy:2+Math.random()*4,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:["#4de1ff","#a78bfa","#ffd166","#b6ff6a"][i%4],s:6+Math.random()*8,e:i%7===0});if(!raf)loop()}
+function loop(){cx.clearRect(0,0,cv.width,cv.height);P=P.filter(p=>p.y<cv.height+30);
+  P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);if(p.e){cx.font="20px serif";cx.fillText("⭐",0,0)}else{cx.fillStyle=p.c;cx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2)}cx.restore()});
+  raf=P.length?requestAnimationFrame(loop):0}
+function gauge(){let v=0;$("#gf").style.width="99.9%";const id=setInterval(()=>{v=Math.min(99.9,v+3.3);$("#pct").textContent=`(${v.toFixed(1)}%)`;if(v>=99.9)clearInterval(id)},reduce?0:50)}
+$("#env").onclick=()=>{$("#letter").classList.add("open");$("#env").style.display="none";confetti();setTimeout(()=>$("#letter").scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"}),250)};
+$("#cel").onclick=()=>{confetti();setTimeout(confetti,600)};
+
+/* ---- scroll, reveal, counters ---- */
+addEventListener("scroll",()=>{const h=document.documentElement;$("#prog").style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+"%"},{passive:true});
+let counted=false,gdone=false;
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;e.target.classList.add("in");
+  if(e.target.id==="fw"&&!counted){counted=true;let v=0;if(!total)return;const el=$("#tot");const id=setInterval(()=>{el.textContent=++v;if(v>=total){clearInterval(id);confetti()}},Math.max(60,1800/total))}
+  if(e.target.id==="ow"&&!gdone){gdone=true;gauge()}
+}),{threshold:.15});
+document.querySelectorAll(".rv").forEach(e=>io.observe(e));
+</script>
+</body>
+</html>
