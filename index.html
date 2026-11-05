@@ -156,7 +156,7 @@ footer{text-align:center;padding:50px 22px;font:13px var(--mono);color:var(--mut
     <div class="stk"><span><b id="cStars">0</b>tokens kept<br>(stars)</span></div>
     <span class="eyebrow" id="eb"></span>
     <h1>The NLP<br><span>Pipeline</span></h1>
-    <p class="fn" style="font-size:15px;max-width:620px">A semester of Natural Language Processing at VIT Vellore, documented through course concepts, classroom contributions, hands-on work and ClinScribe — an ambient clinical intelligence project.</p>
+    <p class="fn" style="font-size:15px;max-width:620px"><strong>CS 4001</strong> · <strong>Natural Language Processing and Computational Linguistics</strong><br><span style="color:var(--mute)">Fall Semester 2026-27 (Semester)</span></p>
     <div class="card term"><div class="bar">● ● ● &nbsp; pipeline.py</div><pre id="typed"></pre></div>
     <div class="meta"><span>name <b id="cName"></b></span><span>reg <b id="cReg"></b></span><span id="cCol"></span></div>
     <a class="go" href="#tok">▶ Run the pipeline</a>
@@ -216,6 +216,9 @@ footer{text-align:center;padding:50px 22px;font:13px var(--mono);color:var(--mut
 <section id="vec" class="wrap stage" data-stage="5">
   <div class="sh rv"><span class="no">STAGE 05</span><h2>ClinScribe in Action</h2><p class="fn">recognize_entities(consultation) → ledger</p></div>
   <div class="rv">
+    <div class="links" style="margin-top:0; margin-bottom:12px">
+      <a href="https://github.com/sumitha-murthi/ClinScribe" target="_blank" rel="noreferrer">ClinScribe GitHub ↗</a>
+    </div>
     <h4 class="sub" style="margin-top:0">Try the negation engine live</h4>
     <p class="fn">A small JavaScript re-creation of ClinScribe’s hardened NegEx idea (trigger windows plus clause-scope terminators), running right here. The real engine is the Python code in the repository. Type your own sentence.</p>
     <div class="btns" id="presets"></div>
@@ -259,7 +262,9 @@ actual:other      0          0</pre></div>
 /* ============ EDIT THIS PART ============ */
 const CONFIG = {
   name: "Dhanush Kumar G", reg: "23MID0141", college: "VIT Vellore",
-  course: "CSI4001 Natural Language Processing and Computational Linguistics", semester: "Semester 2026",
+  course: "CS 4001",
+  courseTitle: "Natural Language Processing and Computational Linguistics",
+  semester: "Fall Semester 2026-27 (Semester)",
   faculty: "Ma’am", facultyFull: "Dr. Sharmila Banu K"
 };
 const SENT = "Dhanush is learning NLP and earning stars";   // the sentence that travels down the pipeline
